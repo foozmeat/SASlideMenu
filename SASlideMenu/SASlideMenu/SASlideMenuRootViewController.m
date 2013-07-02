@@ -40,7 +40,6 @@ typedef enum {
     UITapGestureRecognizer* tapGesture;
 }
 
-@property (nonatomic,strong) UINavigationController* selectedContent;
 @property (nonatomic, strong) UIView* shieldWithMenu;
 
 @end
