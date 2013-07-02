@@ -18,6 +18,7 @@
 @property (nonatomic,strong) UIViewController* rightMenu;
 @property (nonatomic,assign) Boolean isRightMenuEnabled;
 @property (nonatomic,strong) SASlideMenuNavigationController* navigationController;
+@property (nonatomic,strong) UINavigationController* selectedContent;
 
 -(void) switchToContentViewController:(UINavigationController*) content;
 -(void) addContentViewController:(UIViewController*) content withIndexPath:(NSIndexPath*)indexPath;
