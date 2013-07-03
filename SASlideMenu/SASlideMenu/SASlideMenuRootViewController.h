@@ -28,6 +28,8 @@
 
 -(UINavigationController*) controllerForIndexPath:(NSIndexPath*) indexPath;
 
+-(void) panItem:(UIPanGestureRecognizer*)gesture;
+
 -(void) doSlideToSide;
 -(void) rightMenuAction;
 
