@@ -35,4 +35,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(IBAction)tap:(id)sender{
+    UINavigationController* navController = self.navigationController;
+    [navController popViewControllerAnimated:YES];
+}
+
 @end

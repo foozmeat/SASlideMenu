@@ -43,7 +43,7 @@
     if ([self.slideMenuDataSource respondsToSelector:@selector(segueIdForIndexPath:)]) {
         UINavigationController* controller = [self.rootController controllerForIndexPath:indexPath];
         if (controller) {
-            [self.rootController switchToContentViewController:controller];
+            [self.rootController switchToContentViewController:controller completion:nil];
             return;
         }
         NSString* segueId = [self.slideMenuDataSource segueIdForIndexPath:indexPath];
@@ -67,6 +67,17 @@
         [self loadContentAtIndexPath:indexPath];
     }
 }
+
+-(void) revealLeftMenu{
+    [self.rootController doSlideToSide];
+}
+-(void) revealRightMenu{
+    if (self.rootController.isRightMenuEnabled && self.rootController.rightMenu != nil) {
+        [self.rootController addRightMenu];
+        [self.rootController doSlideToLeftSide];
+    }
+}
+
 
 #pragma mark -
 #pragma mark UIGestureRecognizerDelegate

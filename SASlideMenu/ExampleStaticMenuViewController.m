@@ -12,7 +12,9 @@
 #import "MenuCell.h"
 #import "DarkViewController.h"
 #import "LightViewController.h"
-@interface ExampleStaticMenuViewController() <SASlideMenuDataSource,SASlideMenuDelegate> 
+#import "ShadesViewController.h"
+
+@interface ExampleStaticMenuViewController() <SASlideMenuDataSource,SASlideMenuDelegate>
 
 @end
 
@@ -25,9 +27,7 @@
 
 #pragma mark -
 #pragma mark SASlideMenuDataSource
-// The SASlideMenuDataSource is used to provide the initial segueid that represents the initial visibile view controller and to provide eventual additional configuration to the menu button
 
-// This is the indexPath selected at start-up
 -(NSIndexPath*) selectedIndexPath{
     return [NSIndexPath indexPathForRow:0 inSection:0];
 }
@@ -53,27 +53,22 @@
     return NO;
 }
 
-// This is used to configure the menu button. The beahviour of the button should not be modified
 -(void) configureMenuButton:(UIButton *)menuButton{
     menuButton.frame = CGRectMake(0, 0, 40, 29);
-    [menuButton setImage:[UIImage imageNamed:@"menuicon.png"] forState:UIControlStateNormal];
-    [menuButton setBackgroundImage:[UIImage imageNamed:@"menu.png"] forState:UIControlStateNormal];
-    [menuButton setBackgroundImage:[UIImage imageNamed:@"menuhighlighted.png"] forState:UIControlStateHighlighted];
-    [menuButton setAdjustsImageWhenHighlighted:NO];
-    [menuButton setAdjustsImageWhenDisabled:NO];
+    [menuButton setImage:[UIImage imageNamed:@"menuicon"] forState:UIControlStateNormal];
 }
 
 -(void) configureSlideLayer:(CALayer *)layer{
     layer.shadowColor = [UIColor blackColor].CGColor;
     layer.shadowOpacity = 0.3;
-    layer.shadowOffset = CGSizeMake(-15, 0);
-    layer.shadowRadius = 10;
+    layer.shadowOffset = CGSizeMake(-5, 0);
+    layer.shadowRadius = 5;
     layer.masksToBounds = NO;
     layer.shadowPath =[UIBezierPath bezierPathWithRect:layer.bounds].CGPath;
 }
 
 -(CGFloat) leftMenuVisibleWidth{
-    return 280;
+    return 260;
 }
 -(void) prepareForSwitchToContentViewController:(UINavigationController *)content{
     UIViewController* controller = [content.viewControllers objectAtIndex:0];
@@ -85,25 +80,30 @@
 #pragma mark -
 #pragma mark SASlideMenuDelegate
 
--(void) slideMenuWillSlideIn{
+
+-(void) slideMenuWillSlideIn:(UINavigationController *)selectedContent{
     NSLog(@"slideMenuWillSlideIn");
 }
--(void) slideMenuDidSlideIn{
+-(void) slideMenuDidSlideIn:(UINavigationController *)selectedContent{
     NSLog(@"slideMenuDidSlideIn");
 }
--(void) slideMenuWillSlideToSide{
-    NSLog(@"slideMenuWillSlideToSide");    
+-(void) slideMenuWillSlideToSide:(UINavigationController *)selectedContent{
+    NSLog(@"slideMenuWillSlideToSide");
 }
--(void) slideMenuDidSlideToSide{
+-(void) slideMenuDidSlideToSide:(UINavigationController *)selectedContent{
     NSLog(@"slideMenuDidSlideToSide");
-    
 }
--(void) slideMenuWillSlideOut{
+-(void) slideMenuWillSlideOut:(UINavigationController *)selectedContent{
     NSLog(@"slideMenuWillSlideOut");
-    
 }
--(void) slideMenuDidSlideOut{
+-(void) slideMenuDidSlideOut:(UINavigationController *)selectedContent{
     NSLog(@"slideMenuDidSlideOut");
+}
+-(void) slideMenuWillSlideToLeft:(UINavigationController *)selectedContent{
+    NSLog(@"slideMenuWillSlideToLeft");
+}
+-(void) slideMenuDidSlideToLeft:(UINavigationController *)selectedContent{
+    NSLog(@"slideMenuDidSlideToLeft");
 }
 
 @end

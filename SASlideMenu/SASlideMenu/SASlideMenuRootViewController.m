@@ -9,8 +9,7 @@
 #import "SASlideMenuRootViewController.h"
 #import "SASlideMenuNavigationController.h"
 #import "SASlideMenuRightMenuViewController.h"
-#define kSlideInInterval 0.3
-#define kSlideOutInterval 0.1
+
 #define kMenuTableSize 280
 #define kSwipeMinDetectionSpeed 0.1f
 
@@ -50,6 +49,8 @@ typedef enum {
 
 @implementation SASlideMenuRootViewController
 
+@synthesize menuView;
+
 #pragma mark -
 #pragma mark SASlideMenuRootViewController
 
@@ -67,7 +68,6 @@ typedef enum {
         return kMenuTableSize;
     }
 }
-
 -(void) slideOut:(UINavigationController*) controller{
     CGRect bounds = self.view.bounds;
     controller.view.frame = CGRectMake(bounds.size.width,0.0,bounds.size.width,bounds.size.height);
@@ -77,7 +77,6 @@ typedef enum {
     CGFloat menuSize = [self rightMenuSize];
     controller.view.frame = CGRectMake(-menuSize,0.0,bounds.size.width,bounds.size.height);
 }
-
 -(void) slideToSide:(UINavigationController*) controller{
     CGRect bounds = self.view.bounds;
     CGFloat menuSize = [self leftMenuSize];
@@ -114,11 +113,16 @@ typedef enum {
 }
 
 -(void) doSlideToSide{
-    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideToSide)]){
-        [self.leftMenu.slideMenuDelegate slideMenuWillSlideToSide];
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideToSide:)]){
+        [self.leftMenu.slideMenuDelegate slideMenuWillSlideToSide:self.selectedContent];
     }
     [self disableGestureRecognizers];
-    [UIView animateWithDuration:kSlideInInterval
+    CGFloat duration = kSlideInInterval;
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideInAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideInAnimationDuration];
+    }
+    
+    [UIView animateWithDuration:duration
                           delay:0.0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
@@ -126,19 +130,24 @@ typedef enum {
                      }
                      completion:^(BOOL finished) {
                          [self completeSlideToSide:self.selectedContent];
-                         if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideToSide)]){
-                             [self.leftMenu.slideMenuDelegate slideMenuDidSlideToSide];
+                         if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideToSide:)]){
+                             [self.leftMenu.slideMenuDelegate slideMenuDidSlideToSide:self.selectedContent];
                          }
                          [self enableGestureRecognizers];
                      }];
 }
 
 -(void) doSlideToLeftSide{
-    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideToLeft)]){
-        [self.leftMenu.slideMenuDelegate slideMenuWillSlideToLeft];
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideToLeft:)]){
+        [self.leftMenu.slideMenuDelegate slideMenuWillSlideToLeft:self.selectedContent];
     }
     [self disableGestureRecognizers];
-    [UIView animateWithDuration:kSlideInInterval
+    CGFloat duration = kSlideInInterval;
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideInAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideInAnimationDuration];
+    }
+
+    [UIView animateWithDuration:duration
                           delay:0.0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
@@ -146,37 +155,47 @@ typedef enum {
                      }
                      completion:^(BOOL finished) {
                          [self completeSlideToLeftSide:self.selectedContent];
-                         if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideToLeft)]){
-                             [self.leftMenu.slideMenuDelegate slideMenuDidSlideToLeft];
+                         if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideToLeft:)]){
+                             [self.leftMenu.slideMenuDelegate slideMenuDidSlideToLeft:self.selectedContent];
                          }
                          [self enableGestureRecognizers];
                      }];
 }
 
 -(void) doSlideOut:(void (^)(BOOL completed))completion{
-    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideOut)]){
-        [self.leftMenu.slideMenuDelegate slideMenuWillSlideOut];
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideOut:)]){
+        [self.leftMenu.slideMenuDelegate slideMenuWillSlideOut:self.selectedContent];
     }
     [self disableGestureRecognizers];
-    [UIView animateWithDuration:kSlideOutInterval delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    CGFloat duration = kSlideOutInterval;
+
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideOutAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideOutAnimationDuration];
+    }
+    [UIView animateWithDuration:duration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self slideOut:self.selectedContent];
     } completion:^(BOOL finished) {
         if (completion) {
             completion(finished);
         }
-        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideOut)]){
-            [self.leftMenu.slideMenuDelegate slideMenuDidSlideOut];
+        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideOut:)]){
+            [self.leftMenu.slideMenuDelegate slideMenuDidSlideOut:self.selectedContent];
         }
         [self enableGestureRecognizers];
     }];
 }
 
 -(void) doSlideIn:(void (^)(BOOL completed))completion{
-    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideIn)]){
-        [self.leftMenu.slideMenuDelegate slideMenuWillSlideIn];
+    if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideIn:)]){
+        [self.leftMenu.slideMenuDelegate slideMenuWillSlideIn:self.selectedContent];
     }
     [self disableGestureRecognizers];
-    [UIView animateWithDuration:kSlideInInterval delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    CGFloat duration = kSlideInInterval;
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideInAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideInAnimationDuration];
+    }
+    
+    [UIView animateWithDuration:duration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         [self slideIn:self.selectedContent];
     } completion:^(BOOL finished) {
         if (completion) {
@@ -187,8 +206,8 @@ typedef enum {
             [self removeRightMenu];
         }
         [self completeSlideIn:self.selectedContent];
-        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideIn)]){
-            [self.leftMenu.slideMenuDelegate slideMenuDidSlideIn];
+        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideIn:)]){
+            [self.leftMenu.slideMenuDelegate slideMenuDidSlideIn:self.selectedContent];
         }
         [self enableGestureRecognizers];
     }];
@@ -232,7 +251,7 @@ typedef enum {
     [self doSlideIn:nil];
 }
 -(void) tapItem:(UITapGestureRecognizer*)gesture{
-    [self switchToContentViewController:self.selectedContent];
+    [self switchToContentViewController:self.selectedContent completion:nil];
 }
 
 -(void) panItem:(UIPanGestureRecognizer*)gesture{    
@@ -322,7 +341,7 @@ typedef enum {
     return [controllers objectForKey:indexPath];
 }
 
--(void) switchToContentViewController:(UINavigationController*) content{
+-(void) switchToContentViewController:(UINavigationController*) content completion:(void (^)(void))completion{
     CGRect bounds = self.view.bounds;
     self.view.userInteractionEnabled = NO;
     if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(prepareForSwitchToContentViewController:)]) {
@@ -348,6 +367,9 @@ typedef enum {
                 self.selectedContent = content;
                 [self doSlideIn:^(BOOL slideInCompleted) {
                     [content didMoveToParentViewController:self];
+                    if(completion){
+                        completion();
+                    }
                     self.view.userInteractionEnabled = YES;
                 }];
             }];
@@ -361,6 +383,9 @@ typedef enum {
             self.selectedContent = content;
             [self doSlideIn:^(BOOL completed) {
                 [content didMoveToParentViewController:self];
+                if(completion){
+                    completion();
+                }
                 self.view.userInteractionEnabled = YES;
             }];
         }
@@ -373,8 +398,8 @@ typedef enum {
         [self addChildViewController:content];
         [self.view addSubview:content.view];
         self.selectedContent = content;
-        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideIn)]){
-            [self.leftMenu.slideMenuDelegate slideMenuWillSlideIn];
+        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuWillSlideIn:)]){
+            [self.leftMenu.slideMenuDelegate slideMenuWillSlideIn:self.selectedContent];
         }
         [self slideIn:self.selectedContent];
         if (state == SASlideMenuStateRightMenu) {
@@ -383,12 +408,14 @@ typedef enum {
             [self.rightMenu removeFromParentViewController];
         }
         [self completeSlideIn:self.selectedContent];
-        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideIn)]){
-            [self.leftMenu.slideMenuDelegate slideMenuDidSlideIn];
+        if ([self.leftMenu.slideMenuDelegate respondsToSelector:@selector(slideMenuDidSlideIn:)]){
+            [self.leftMenu.slideMenuDelegate slideMenuDidSlideIn:self.selectedContent];
         }
         [content didMoveToParentViewController:self];
+        if(completion){
+            completion();
+        }
         self.view.userInteractionEnabled = YES;
-        
     }
 }
 
@@ -419,8 +446,12 @@ typedef enum {
     navigationController.view.frame = CGRectMake(bounds.size.width,0.0,bounds.size.width,bounds.size.height);
     [root addChildViewController:navigationController];
     [root.view addSubview:navigationController.view];
-    
-    [UIView animateWithDuration:kSlideInInterval animations:^{
+    CGFloat duration = kSlideInInterval;
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideInAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideInAnimationDuration];
+    }
+
+    [UIView animateWithDuration:duration animations:^{
         navigationController.view.frame = CGRectMake(0.0,0.0,bounds.size.width,bounds.size.height);
     } completion:^(BOOL finished) {
         [navigationController didMoveToParentViewController:root];
@@ -431,7 +462,11 @@ typedef enum {
 -(void) popRightNavigationController{
     CGRect bounds = self.view.bounds;
     [self.navigationController willMoveToParentViewController:nil];
-    [UIView animateWithDuration:kSlideInInterval animations:^{
+    CGFloat duration = kSlideInInterval;
+    if ([self.leftMenu.slideMenuDataSource respondsToSelector:@selector(slideInAnimationDuration)]) {
+        duration = [self.leftMenu.slideMenuDataSource slideInAnimationDuration];
+    }
+    [UIView animateWithDuration:duration animations:^{
         self.navigationController.view.frame = CGRectMake(bounds.size.width, 0, bounds.size.width, bounds.size.height);
     } completion:^(BOOL finished) {
         [self.navigationController.view removeFromSuperview];
@@ -453,7 +488,7 @@ typedef enum {
 
 -(void) viewDidLoad{
     [super viewDidLoad];
-    
+
     controllers = [[NSMutableDictionary alloc] init];
     
     self.shieldWithMenu = [[UIView alloc] initWithFrame:CGRectZero];

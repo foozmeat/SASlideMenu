@@ -20,7 +20,9 @@
 @property (nonatomic,strong) SASlideMenuNavigationController* navigationController;
 @property (nonatomic,strong) UINavigationController* selectedContent;
 
--(void) switchToContentViewController:(UINavigationController*) content;
+@property (nonatomic,strong) IBOutlet UIView* menuView;
+
+-(void) switchToContentViewController:(UINavigationController*) content completion:(void (^)(void))completion;
 -(void) addContentViewController:(UIViewController*) content withIndexPath:(NSIndexPath*)indexPath;
 
 -(void) popRightNavigationController;
@@ -31,8 +33,9 @@
 -(void) panItem:(UIPanGestureRecognizer*)gesture;
 
 -(void) doSlideToSide;
+-(void) doSlideToLeftSide;
 -(void) rightMenuAction;
+-(void) addRightMenu;
 
-
-
+-(void) panItem:(UIPanGestureRecognizer*)gesture;
 @end

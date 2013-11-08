@@ -52,34 +52,35 @@
         CALayer* layer = destination.view.layer;
         layer.shadowColor = [UIColor blackColor].CGColor;
         layer.shadowOpacity = 0.3;
-        layer.shadowOffset = CGSizeMake(-15, 0);
+        layer.shadowOffset = CGSizeMake(-5, 0);
         layer.shadowRadius = 10;
         layer.masksToBounds = NO;
         layer.shadowPath =[UIBezierPath bezierPathWithRect:layer.bounds].CGPath;
     }
     
-    [rootController switchToContentViewController:destination];
+    [rootController switchToContentViewController:destination completion:^{
+        if ([rootController.leftMenu.slideMenuDataSource respondsToSelector:@selector(segueIdForIndexPath:)]) {
+            [rootController addContentViewController:destination withIndexPath:selectedIndexPath];
+        }
+        
+        //We do that after switchToContentViewController.
+        //because we need destination.parentViewController to be initialized.
+        if (hasRightMenu) {
+            [destination performSegueWithIdentifier:@"rightMenu" sender:rootController];
+        }
+        
+        Boolean disablePanGesture= NO;
+        if ([rootController.leftMenu.slideMenuDataSource respondsToSelector:@selector(disablePanGestureForIndexPath:)]) {
+            disablePanGesture = [rootController.leftMenu.slideMenuDataSource disablePanGestureForIndexPath:selectedIndexPath];
+        }
+        if (!disablePanGesture) {
+            UIPanGestureRecognizer* panGesture= [[UIPanGestureRecognizer alloc] initWithTarget:rootController action:@selector(panItem:)];
+            [panGesture setMaximumNumberOfTouches:2];
+            [panGesture setDelegate:source];
+            [destination.view addGestureRecognizer:panGesture];
+        }        
+    }];
 
-    if ([rootController.leftMenu.slideMenuDataSource respondsToSelector:@selector(segueIdForIndexPath:)]) {
-        [rootController addContentViewController:destination withIndexPath:selectedIndexPath];        
-    }
-
-    //We do that after switchToContentViewController.
-    //because we need destination.parentViewController to be initialized.
-    if (hasRightMenu) {
-        [destination performSegueWithIdentifier:@"rightMenu" sender:rootController];
-    }
-    
-    Boolean disablePanGesture= NO;
-    if ([rootController.leftMenu.slideMenuDataSource respondsToSelector:@selector(disablePanGestureForIndexPath:)]) {
-        disablePanGesture = [rootController.leftMenu.slideMenuDataSource disablePanGestureForIndexPath:selectedIndexPath];
-    }
-    if (!disablePanGesture) {
-        UIPanGestureRecognizer* panGesture= [[UIPanGestureRecognizer alloc] initWithTarget:rootController action:@selector(panItem:)];
-        [panGesture setMaximumNumberOfTouches:2];
-        [panGesture setDelegate:source];
-        [destination.view addGestureRecognizer:panGesture];
-    }
 }
 
 @end
